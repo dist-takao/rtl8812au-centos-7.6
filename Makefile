@@ -216,6 +216,8 @@ ifeq ($(CONFIG_USB2_EXTERNAL_POWER), y)
 EXTRA_CFLAGS += -DCONFIG_USE_EXTERNAL_POWER
 endif
 
+EXTRA_CFLAGS += -DREDHAT_76
+
 _OS_INTFS_FILES :=	os_dep/osdep_service.o \
 			os_dep/linux/os_intfs.o \
 			os_dep/linux/$(HCI_NAME)_intf.o \

@@ -20,7 +20,7 @@
 
 #define RT_TAG	'1178'
 
-#if (LINUX_VERSION_CODE < KERNEL_VERSION(4, 11, 0))
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(4, 11, 0) && LINUX_VERSION_CODE > KERNEL_VERSION(4, 0, 0))
 static inline ssize_t call_read_iter(struct file *file, struct kiocb *kio,
 				     struct iov_iter *iter)
 {

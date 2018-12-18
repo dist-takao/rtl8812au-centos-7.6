@@ -16,7 +16,13 @@
 
 #ifdef MARK_KERNEL_PFU
 	#include <linux/kernel.h>
-	#include <asm/fpu/api.h>
+/*	#include <asm/fpu/api.h> */
+        #include <linux/version.h>
+        #if LINUX_VERSION_CODE >= KERNEL_VERSION(4,2,0)
+            #include <asm/fpu/api.h>
+        #else
+            #include "asm/i387.h"
+        #endif
 #endif
 
 #include <drv_types.h>

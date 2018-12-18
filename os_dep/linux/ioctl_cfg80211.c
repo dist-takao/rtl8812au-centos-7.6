@@ -27,7 +27,7 @@
 #define DBG_RTW_CFG80211_MESH_CONF 0
 #endif
 
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 0, 0))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 0, 0)) || defined(REDHAT_76)
 #define STATION_INFO_INACTIVE_TIME	BIT(NL80211_STA_INFO_INACTIVE_TIME)
 #define STATION_INFO_LLID			BIT(NL80211_STA_INFO_LLID)
 #define STATION_INFO_PLID			BIT(NL80211_STA_INFO_PLID)
@@ -950,7 +950,7 @@ void rtw_cfg80211_ibss_indicate_connect(_adapter *padapter)
 	struct wlan_network  *cur_network = &(pmlmepriv->cur_network);
 	struct wireless_dev *pwdev = padapter->rtw_wdev;
 	struct cfg80211_bss *bss = NULL;
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 15, 0))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 15, 0)) || defined(REDHAT_76)
 	struct wiphy *wiphy = pwdev->wiphy;
 	int freq = 2412;
 	struct ieee80211_channel *notify_channel;
@@ -1006,7 +1006,7 @@ void rtw_cfg80211_ibss_indicate_connect(_adapter *padapter)
 			RTW_PRINT(FUNC_ADPT_FMT" BSS not found !!\n", FUNC_ADPT_ARG(padapter));
 	}
 	/* notify cfg80211 that device joined an IBSS */
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 15, 0))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 15, 0)) || defined(REDHAT_76)
 	notify_channel = ieee80211_get_channel(wiphy, freq);
 	cfg80211_ibss_joined(padapter->pnetdev, cur_network->network.MacAddress, notify_channel, GFP_ATOMIC);
 #else
@@ -1026,7 +1026,7 @@ void rtw_cfg80211_indicate_connect(_adapter *padapter)
 #endif
 	struct cfg80211_bss *bss = NULL;
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 12, 0)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 12, 0) || defined(REDHAT_76)
 	struct cfg80211_roam_info roam_info ={};
 #endif
 
@@ -1099,7 +1099,7 @@ check_bss:
 		notify_channel = ieee80211_get_channel(wiphy, freq);
 		#endif
 
-		#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 12, 0)
+		#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 12, 0) || defined(REDHAT_76)
 		roam_info.bssid = cur_network->network.MacAddress;
 		roam_info.req_ie = pmlmepriv->assoc_req + sizeof(struct rtw_ieee80211_hdr_3addr) + 2;
 		roam_info.req_ie_len = pmlmepriv->assoc_req_len - sizeof(struct rtw_ieee80211_hdr_3addr) - 2;
@@ -1194,7 +1194,7 @@ void rtw_cfg80211_indicate_disconnect(_adapter *padapter, u16 reason, u8 locally
 	_enter_critical_bh(&pwdev_priv->connect_req_lock, &irqL);
 
 	if (padapter->ndev_unregistering || !rtw_wdev_not_indic_disco(pwdev_priv)) {
-		#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 11, 0) || defined(COMPAT_KERNEL_RELEASE)
+		#if !defined(REDHAT_76) && (LINUX_VERSION_CODE < KERNEL_VERSION(3, 11, 0) || defined(COMPAT_KERNEL_RELEASE))
 		RTW_INFO("pwdev->sme_state(b)=%d\n", pwdev->sme_state);
 
 		if (pwdev->sme_state == CFG80211_SME_CONNECTING) {
@@ -2449,7 +2449,7 @@ void rtw_cfg80211_indicate_scan_done(_adapter *adapter, bool aborted)
 	struct rtw_wdev_priv *pwdev_priv = adapter_wdev_data(adapter);
 	_irqL	irqL;
 
-#if (KERNEL_VERSION(4, 7, 0) <= LINUX_VERSION_CODE)
+#if (KERNEL_VERSION(4, 7, 0) <= LINUX_VERSION_CODE) || defined(REDHAT_76)
 	struct cfg80211_scan_info info;
 
 	memset(&info, 0, sizeof(info));
@@ -2466,7 +2466,7 @@ void rtw_cfg80211_indicate_scan_done(_adapter *adapter, bool aborted)
 		if (pwdev_priv->scan_request->wiphy != pwdev_priv->rtw_wdev->wiphy)
 			RTW_INFO("error wiphy compare\n");
 		else
-#if (KERNEL_VERSION(4, 7, 0) <= LINUX_VERSION_CODE)
+#if (KERNEL_VERSION(4, 7, 0) <= LINUX_VERSION_CODE) || defined(REDHAT_76)
 			cfg80211_scan_done(pwdev_priv->scan_request, &info);
 #else
 			cfg80211_scan_done(pwdev_priv->scan_request, aborted);
@@ -9236,7 +9236,7 @@ static void rtw_cfg80211_preinit_wiphy(_adapter *adapter, struct wiphy *wiphy)
 #endif
 
 #if defined(CONFIG_PM) && (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 0, 0) && \
-			   LINUX_VERSION_CODE < KERNEL_VERSION(4, 12, 0))
+			   LINUX_VERSION_CODE < KERNEL_VERSION(4, 12, 0)) && !defined(REDHAT_76)
 	wiphy->flags |= WIPHY_FLAG_SUPPORTS_SCHED_SCAN;
 #ifdef CONFIG_PNO_SUPPORT
 	wiphy->max_sched_scan_ssids = MAX_PNO_LIST_COUNT;
@@ -9247,7 +9247,7 @@ static void rtw_cfg80211_preinit_wiphy(_adapter *adapter, struct wiphy *wiphy)
 #endif
 
 #if defined(CONFIG_PM) && (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 0, 0))
-#if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 11, 0))
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 11, 0)) && !defined(REDHAT_76)
 	wiphy->wowlan = wowlan_stub;
 #else
 	wiphy->wowlan = &wowlan_stub;

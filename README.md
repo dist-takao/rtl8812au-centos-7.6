@@ -3,7 +3,7 @@
 
 ### 
 newest driver 5.3.4 from realtek + patches to add 8814 support
-forked from aircrack-ng/rtl8812au  
+forked from aircrack-ng/rtl8812au    
 modified for Centos 7.6.   
 the kernel`s version of Centos 7.6 is 3.10,but backported many 4.x code.  
 added condition flags for 4.x code,mainly on cfg80211 and wifi.  

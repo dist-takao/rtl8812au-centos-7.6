@@ -216,7 +216,10 @@ ifeq ($(CONFIG_USB2_EXTERNAL_POWER), y)
 EXTRA_CFLAGS += -DCONFIG_USE_EXTERNAL_POWER
 endif
 
+REDHAT_VER := $(shell cut -f4 -d" " /etc/redhat-release |cut -d"." -f1,2 )
+ifeq ($(REDHAT_VER), 7.6)
 EXTRA_CFLAGS += -DREDHAT_76
+endif
 
 _OS_INTFS_FILES :=	os_dep/osdep_service.o \
 			os_dep/linux/os_intfs.o \
